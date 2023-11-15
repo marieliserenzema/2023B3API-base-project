@@ -8,7 +8,7 @@ export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 
 
-@Controller('user')
+@Controller('users')
 export class UserController {
     constructor(private readonly usersService: UserService,) { }
 

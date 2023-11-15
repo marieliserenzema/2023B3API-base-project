@@ -26,6 +26,7 @@ export class UserService {
         const user = await this.userRepository.findOne({
             where: { id: id },
         });
+
         if (!user) {
             throw new NotFoundException(`User with ID '' not found`);
         }
@@ -67,7 +68,7 @@ export class UserService {
             throw new UnauthorizedException('Password is not valid.');
         }
 
-        const payload = { userId: user.id, username: user.username };
+        const payload = { userId: user.id, username: user.username, role: user.role };
         return {
             access_token: await this.jwtService.signAsync(payload),
         };
