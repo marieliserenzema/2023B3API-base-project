@@ -11,37 +11,28 @@ import { AdminGuard } from '../guards/admin.guard';
 
 export const Roles = (...roles: UserRole[]) => SetMetadata('roles', roles);
 
+
 @Controller('projects')
 export class ProjectController {
     constructor(private readonly ProjectsService: ProjectService,) { }
 
-
-
-    @UseGuards(RolesGuard)
-    @Roles(UserRole.Employee, UserRole.ProjectManager)
     @Get()
-    async findAll(@Req() request): Promise<Project[]> {
-        console.log('findAll');
-        const userId = request.user.id;
-        console.log('userId', userId)
-        return this.ProjectsService.findProjectByUserId(userId);
-    }
-
-    @UseGuards(RolesGuard)
-    @Roles(UserRole.Admin)
-    @Get()
-    async findAllAdmin(): Promise<Project[]> {
-        console.log('findAllAdmin');
+    findAll(@Req() request): Promise<Project[]> {
+        if (request.user.role.includes(UserRole.Employee)) {
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><findProjectByUserId');
+            const userId = request.user.userId;
+            return this.ProjectsService.findProjectByUserId(userId);
+        }
         return this.ProjectsService.findAllAdmin();
     }
 
-
-
-
-
     @Get(':id')
-    findById(@Param() id: string) {
-        //return this.ProjectsService.findById(id);
+    findById(@Param('id') id: string, @Req() request) {
+        if (request.user.role.includes(UserRole.Employee)) {
+            const userId = request.user.userId;
+            return this.ProjectsService.findProjectByIdEmployee(id,userId);
+        }
+        return this.ProjectsService.findProjectById(id);
     }
 
     @UseGuards(AdminGuard)

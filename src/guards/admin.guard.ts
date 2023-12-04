@@ -6,10 +6,7 @@ import { UserRole } from '../entities/user.entity';
 export class AdminGuard implements CanActivate {
     constructor(private readonly reflector: Reflector) { }
 
-
-
     canActivate(context: ExecutionContext): boolean {
-        console.log('AdminGuard');
         const roles = this.reflector.get<UserRole[]>('roles', context.getHandler());
         if (roles) {
             return true;

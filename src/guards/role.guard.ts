@@ -7,15 +7,22 @@ import { Reflector } from '@nestjs/core';
 @Injectable()
 export class RolesGuard implements CanActivate {
     constructor(private readonly reflector: Reflector) { }
+  
 
     canActivate(context: ExecutionContext): boolean {
-        const userRoles = Object.values(UserRole) as string[];
+        const roles = this.reflector.get<UserRole[]>('roles', context.getHandler());
 
-        const { user } = context.switchToHttp().getRequest();
+        if (!roles) {
+            return true;
+        }
 
-        if (!(user && user.role && userRoles.includes(user.role))) {
+        const { user  } = context.switchToHttp().getRequest();
+
+
+        if (!(user && user.role && roles.includes(user.role))) {
             throw new UnauthorizedException('Unauthorized access');
         }
+
         return true;
     }
 }

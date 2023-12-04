@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from '../entities/project.entity';
@@ -16,12 +16,10 @@ export class ProjectService {
     ) { }
 
     async findAllAdmin(): Promise<Project[]> {
-        console.log('findAllAdmin')
         return this.projectRepository.find();
     }
 
     async findProjectByUserId(userId: string): Promise<Project[]> {
-        console.log('findProjectByUserId');
         const projects = await this.projectRepository.find({ where: { referringEmployeeId: userId } });
 
         if (!projects || projects.length === 0) {
@@ -29,6 +27,27 @@ export class ProjectService {
         }
 
         return projects;
+    }
+
+    async findProjectById(id: string): Promise<Project> {
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><findProjectByUserId');
+        const project = await this.projectRepository.find({ where: { id: id } });
+
+        if (!project || project.length === 0) {
+            throw new NotFoundException(`No projects found with ID: ${id}`);
+        }
+
+        return project[0];
+    }
+
+    async findProjectByIdEmployee(id: string, userId : string): Promise<Project> {
+        const project = this.findProjectById(id);
+
+        if ((await project).referringEmployeeId !== userId) {
+            throw new ForbiddenException('Access to this project is forbidden');
+        }
+
+        return project;
     }
 
 

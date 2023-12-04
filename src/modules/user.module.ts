@@ -18,10 +18,7 @@ import { APP_GUARD, } from '@nestjs/core';
         signOptions: { expiresIn: jwtConfig.expiresIn },
     },),],
     controllers: [UserController],
-    providers: [UserService, CreateUserDto, LoginUserDto, {
-        provide: APP_GUARD,
-        useClass: AuthGuard,
-    },],
+    providers: [UserService, CreateUserDto, LoginUserDto,],
     exports: [UserService]
 })
 export class UserModule { }

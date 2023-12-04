@@ -1,8 +1,9 @@
-import { Controller, Get, Body, Post, Request, UsePipes, ValidationPipe, Res, Param, } from '@nestjs/common';
+import { Controller, Get, Body, Post, Request, UsePipes, ValidationPipe, Res, Param, UseGuards, } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { CreateUserDto, LoginUserDto } from '../dto/user.dto';
 import { Response } from 'express';
 import { SetMetadata } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
 export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
@@ -44,6 +45,4 @@ export class UserController {
     login(@Body() loginUserDto: LoginUserDto) {
         return this.usersService.validateUser(loginUserDto);
     }
-
-
 }
