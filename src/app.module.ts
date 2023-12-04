@@ -7,6 +7,8 @@ import { ProjectModule } from './modules/project.module';
 import { Project } from './entities/project.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './guards/auth.guard'
+import { ProjectUsersModule } from './modules/project-users.module';
+import { ProjectUsers } from './entities/project-users.entity';
 
 @Module({
   imports: [
@@ -20,13 +22,14 @@ import { AuthGuard } from './guards/auth.guard'
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [User, Project],
+        entities: [User, Project, ProjectUsers],
         synchronize: true,
       }),
       inject: [ConfigService],
     }),
     UserModule,
     ProjectModule,
+    ProjectUsersModule
   ],
   providers: [{
     provide: APP_GUARD,

@@ -15,7 +15,7 @@ export class ProjectService {
         private readonly userService: UserService,
     ) { }
 
-    async findAllAdmin(): Promise<Project[]> {
+    async findAll(): Promise<Project[]> {
         return this.projectRepository.find();
     }
 
@@ -30,7 +30,6 @@ export class ProjectService {
     }
 
     async findProjectById(id: string): Promise<Project> {
-        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><findProjectByUserId');
         const project = await this.projectRepository.find({ where: { id: id } });
 
         if (!project || project.length === 0) {

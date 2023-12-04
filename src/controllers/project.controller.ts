@@ -3,27 +3,24 @@ import { ProjectService } from '../services/project.service';
 import { Project } from '../entities/project.entity';
 import { CreateProjectDto } from '../dto/project.dto';
 import { UserRole } from '../entities/user.entity';
-import { RolesGuard } from '../guards/role.guard';
-import { Public } from './user.controller';
-import { AuthGuard } from '../guards/auth.guard';
-import { Admin } from 'typeorm';
 import { AdminGuard } from '../guards/admin.guard';
+import { RolesGuard } from '../guards/role.guard';
 
 export const Roles = (...roles: UserRole[]) => SetMetadata('roles', roles);
 
 
 @Controller('projects')
+@UseGuards(RolesGuard)
 export class ProjectController {
     constructor(private readonly ProjectsService: ProjectService,) { }
 
     @Get()
     findAll(@Req() request): Promise<Project[]> {
         if (request.user.role.includes(UserRole.Employee)) {
-            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><findProjectByUserId');
             const userId = request.user.userId;
             return this.ProjectsService.findProjectByUserId(userId);
         }
-        return this.ProjectsService.findAllAdmin();
+        return this.ProjectsService.findAll();
     }
 
     @Get(':id')
@@ -39,6 +36,7 @@ export class ProjectController {
     @Post()
     createProject(@Body() createProjectDto: CreateProjectDto) {
         console.log('createProject');
+        console.log(createProjectDto);
         return this.ProjectsService.createProject(createProjectDto);
     }
 
