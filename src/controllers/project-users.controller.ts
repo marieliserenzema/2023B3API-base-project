@@ -1,28 +1,28 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { ProjectUsersService } from "../services/project-users.service";
 import { ProjectUsers } from "../entities/project-users.entity";
-import { Public } from "./user.controller";
 import { UserRole } from "../entities/user.entity";
 import { RolesGuard } from "../guards/role.guard";
 import { CreateProjectUsersDto } from "../dto/project-users.dto";
-import { AdminGuard } from "../guards/admin.guard";
+import { Project } from "../entities/project.entity";
 
-@Controller('projects-users')
+@Controller('project-users')
 @UseGuards(RolesGuard)
 export class ProjectUsersController {
     constructor(private readonly ProjectsUsersService: ProjectUsersService,) { }
 
     @Get()
-    findAll(@Req() request): Promise<ProjectUsers[]> {
+    findAll(@Req() request): Promise<Project[]>{
         if (request.user.role.includes(UserRole.Employee)) {
             const userId = request.user.userId;
-            return this.ProjectsUsersService.findProjectUsersByUserId(userId);
+            const projects = this.ProjectsUsersService.findProjectByUserId(userId);
+            return projects;
         }
-        return this.ProjectsUsersService.findAll();
+        return this.ProjectsUsersService.findAllProject();
     }
 
     @Get(':id')
-    findById(@Param('id') id: string, @Req() request):  Promise<ProjectUsers>  {
+    findById(@Param('id') id: string, @Req() request) {
         if (request.user.role.includes(UserRole.Employee)) {
             const userId = request.user.userId;
             return this.ProjectsUsersService.findProjectUsersByIdEmployee(id,userId); 
@@ -30,9 +30,12 @@ export class ProjectUsersController {
         return this.ProjectsUsersService.findProjectUsersById(id);
     }
 
-    @UseGuards(AdminGuard)
     @Post()
-    createProjectUsers(@Body() createProjectUsersDto: CreateProjectUsersDto) {
-        return this.ProjectsUsersService.createProjectUser(createProjectUsersDto);
+    createProjectUsers(@Body() createProjectUsersDto: CreateProjectUsersDto, @Req() request) {
+        if (request.user.role.includes(UserRole.Employee)) {
+            throw new UnauthorizedException(`User '${request.user.userId}' not found`);
+        }
+        const role = request.user.role;
+        return this.ProjectsUsersService.createProjectUser(createProjectUsersDto, role);
     }
 }

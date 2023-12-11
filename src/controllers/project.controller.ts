@@ -35,8 +35,6 @@ export class ProjectController {
     @UseGuards(AdminGuard)
     @Post()
     createProject(@Body() createProjectDto: CreateProjectDto) {
-        console.log('createProject');
-        console.log(createProjectDto);
         return this.ProjectsService.createProject(createProjectDto);
     }
 

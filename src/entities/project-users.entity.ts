@@ -17,7 +17,7 @@ export class ProjectUsers {
     @Column({ type: 'uuid' })
     public userId!: string;
 
-    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', select: false })
     public createdAt!: Date;
 
 }

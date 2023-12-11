@@ -67,4 +67,11 @@ export class ProjectService {
             referringEmployee: referringEmployee
         }
     }
+
+
+    async findProjectByUserIdWithNoExeption(userId: string): Promise<Project[]> {
+        const projects = await this.projectRepository.find({ where: { referringEmployeeId: userId } });
+        return projects;
+    }
+
 }
